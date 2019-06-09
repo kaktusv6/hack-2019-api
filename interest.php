@@ -11,7 +11,14 @@ $startDate = $_REQUEST['date_start'];
 $endDate = $_REQUEST['date_end'];
 $symptoms = $_REQUEST['symptoms'];
 
-$query = "select regions.latitude as 'lat', regions.longitude as 'lng', symptoms.name as 'symptom', interest.fact_interest, interest.date
+$query = "select
+                regions.google_name as 'google_name',
+                regions.name as 'region_name',
+                regions.latitude as 'lat',
+                regions.longitude as 'lng',
+                symptoms.name as 'symptom',
+                interest.fact_interest,
+                interest.date as date
           from interest
           inner join regions on interest.region_id = regions.id
           inner join symptoms on interest.symptom_id = symptoms.id WHERE interest.date between '$startDate' and '$endDate'";
@@ -28,6 +35,9 @@ if (count($symptoms) > 0) {
     }
   }
 }
+$query .= " group by interest.date, symptoms.id, regions.id";
+$query .= " order by interest.date";
+
 
 $res = $mysql->query($query);
 $arInteresting = [];
@@ -36,3 +46,5 @@ while ($row = mysqli_fetch_assoc($res)) {
 }
 
 echo json_encode($arInteresting);
+
+Database::closeConnection();
