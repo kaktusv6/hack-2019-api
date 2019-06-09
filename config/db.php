@@ -18,4 +18,8 @@ class Database {
     self::initConnection();
     return self::$mysql;
   }
+
+  static function closeConnection() {
+    return mysqli_close(self::$mysql);
+  }
 }
